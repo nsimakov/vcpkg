@@ -18,8 +18,9 @@ vcpkg_configure_cmake(
         -DwxUSE_LIBJPEG=sys
         -DwxUSE_LIBPNG=sys
         -DwxUSE_LIBTIFF=sys
-        -DwxUSE_STL=ON
+        -DwxUSE_STL=OFF
         -DwxBUILD_DISABLE_PLATFORM_LIB_DIR=ON
+        -DwxBUILD_COMPATIBILITY=2.8
 )
 
 vcpkg_install_cmake()
