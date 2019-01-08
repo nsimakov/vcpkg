@@ -5,7 +5,9 @@ vcpkg_from_github(
     REF v3.1.1
     SHA512 f6d8974e2f48bae7e96a8938df3ad5efc403036c1dcbe2b48edd276ee7923802ba3e95e3f3bd9db17985e427b8e4f78950df0cbba83ae99d508ed04633816c95
     HEAD_REF master
-    PATCHES disable-platform-lib-dir.patch
+    PATCHES
+        disable-platform-lib-dir.patch
+        wxboxsizer-disable-alignment-check.patch
 )
 
 vcpkg_configure_cmake(
