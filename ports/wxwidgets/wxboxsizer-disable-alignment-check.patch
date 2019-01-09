@@ -1,0 +1,22 @@
+diff --git a/src/common/sizer.cpp b/src/common/sizer.cpp
+index b0b9467..312d42a 100644
+--- a/src/common/sizer.cpp
++++ b/src/common/sizer.cpp
+@@ -2061,7 +2061,7 @@ void wxFlexGridSizer::RemoveGrowableRow( size_t idx )
+ 
+ wxSizerItem *wxBoxSizer::DoInsert(size_t index, wxSizerItem *item)
+ {
+-    const int flags = item->GetFlag();
++    /*const int flags = item->GetFlag();
+     if ( IsVertical() )
+     {
+         wxASSERT_MSG
+@@ -2115,7 +2115,7 @@ wxSizerItem *wxBoxSizer::DoInsert(size_t index, wxSizerItem *item)
+                 wxS("Vertical alignment flags are ignored with wxEXPAND")
+             );
+         }
+-    }
++    }*/
+ 
+     return wxSizer::DoInsert(index, item);
+ }
