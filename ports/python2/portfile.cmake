@@ -15,6 +15,7 @@ set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/python-${PYTHON_VERSION})
 
 include(vcpkg_common_functions)
 
+
 vcpkg_download_distfile(
     PYTHON_ARCHIVE
     URLS https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz
@@ -44,7 +45,14 @@ vcpkg_apply_patches(
         ${CMAKE_CURRENT_LIST_DIR}/003-build-msvc.patch
         ${_PYTHON_PATCHES}
         ${CMAKE_CURRENT_LIST_DIR}/007-fix-build-path.patch
+        ${CMAKE_CURRENT_LIST_DIR}/disable-tcl-tk-tix.patch
 )
+
+# Get external dependencies
+execute_process(
+    COMMAND ${SOURCE_PATH}/PCbuild/get_externals.bat
+    WORKING_DIRECTORY ${SOURCE_PATH}/PCbuild/get_externals.bat
+    )
 
 if (VCPKG_TARGET_ARCHITECTURE MATCHES "x86")
     set(BUILD_ARCH "Win32")
@@ -56,9 +64,11 @@ else()
     message(FATAL_ERROR "Unsupported architecture: ${VCPKG_TARGET_ARCHITECTURE}")
 endif()
 
+
 vcpkg_build_msbuild(
-    PROJECT_PATH ${SOURCE_PATH}/PCBuild/pythoncore.vcxproj
-    PLATFORM ${BUILD_ARCH})
+        PROJECT_PATH ${SOURCE_PATH}/PCBuild/pcbuild.proj
+        PLATFORM ${BUILD_ARCH})
+
 
 file(GLOB HEADERS ${SOURCE_PATH}/Include/*.h)
 file(COPY ${HEADERS} ${SOURCE_PATH}/PC/pyconfig.h DESTINATION ${CURRENT_PACKAGES_DIR}/include/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
@@ -71,6 +81,30 @@ if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
     file(COPY ${SOURCE_PATH}/PCBuild/${OUT_DIR}/python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}.dll DESTINATION ${CURRENT_PACKAGES_DIR}/bin)
     file(COPY ${SOURCE_PATH}/PCBuild/${OUT_DIR}/python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_d.dll DESTINATION ${CURRENT_PACKAGES_DIR}/debug/bin)
 endif()
+
+# Python binary as tool
+foreach(FILE python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}.dll python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_d.dll 
+        python.exe python_d.exe
+    )
+    file(COPY ${SOURCE_PATH}/PCBuild/${OUT_DIR}/${FILE} DESTINATION ${CURRENT_PACKAGES_DIR}/share/python${PYTHON_VERSION_MAJOR})
+endforeach()
+
+# Compiled python modules
+foreach(FILE
+        _bsddb.pdb            _bsddb.pyd            _bsddb_d.pdb            _bsddb_d.pyd            _ctypes.pdb         _ctypes.pyd
+        _ctypes_d.pdb         _ctypes_d.pyd         _ctypes_test.pdb        _ctypes_test.pyd        _ctypes_test_d.pdb  _ctypes_test_d.pyd
+        _elementtree.pdb      _elementtree.pyd      _elementtree_d.pdb      _elementtree_d.pyd      _hashlib.pdb        _hashlib.pyd
+        _hashlib_d.pdb        _hashlib_d.pyd        _msi.pdb                _msi.pyd                _msi_d.pdb          _msi_d.pyd
+        _multiprocessing.pdb  _multiprocessing.pyd  _multiprocessing_d.pdb  _multiprocessing_d.pyd  _socket.pdb         _socket.pyd
+        _socket_d.pdb         _socket_d.pyd         _sqlite3.pdb            _sqlite3.pyd            _sqlite3_d.pdb      _sqlite3_d.pyd
+        _ssl.pdb              _ssl.pyd              _ssl_d.pdb              _ssl_d.pyd              _testcapi.pdb       _testcapi.pyd
+        _testcapi_d.pdb       _testcapi_d.pyd       bz2.pdb                 bz2.pyd                 bz2_d.pdb           bz2_d.pyd
+        pyexpat.pdb           pyexpat.pyd           pyexpat_d.pdb           pyexpat_d.pyd           select.pdb          select.pyd
+        select_d.pdb          select_d.pyd          sqlite3.pdb             sqlite3_d.pdb           unicodedata.pdb     unicodedata.pyd
+        unicodedata_d.pdb     unicodedata_d.pyd     w9xpopen.pdb            w9xpopen_d.pdb          winsound.pdb        winsound.pyd
+    )
+    file(COPY ${SOURCE_PATH}/PCBuild/${OUT_DIR}/${FILE} DESTINATION ${CURRENT_PACKAGES_DIR}/share/python${PYTHON_VERSION_MAJOR}/DLLs)
+endforeach()
 
 # Handle copyright
 file(COPY ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/python${PYTHON_VERSION_MAJOR})
