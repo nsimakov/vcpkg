@@ -45,8 +45,14 @@ vcpkg_apply_patches(
         ${CMAKE_CURRENT_LIST_DIR}/003-build-msvc.patch
         ${_PYTHON_PATCHES}
         ${CMAKE_CURRENT_LIST_DIR}/007-fix-build-path.patch
-        ${CMAKE_CURRENT_LIST_DIR}/disable-tcl-tk-tix.patch
 )
+#vcpkg_apply_patches(
+#    SOURCE_PATH ${SOURCE_PATH}
+#    PATCHES
+#        ${CMAKE_CURRENT_LIST_DIR}/disable-tcl-tk-tix.patch
+#)
+# that patch do not want to be applied, so lets just copy file
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/pcbuild.proj DESTINATION ${SOURCE_PATH}/PCbuild)
 
 # Get external dependencies
 execute_process(
