@@ -1,0 +1,4 @@
+Source: python2-setuptools
+Version: 40.6.3
+Build-Depends: python2
+Description: Setuptools is a fully-featured, actively-maintained, and stable library designed to facilitate packaging Python project
